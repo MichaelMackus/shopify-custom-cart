@@ -9,9 +9,10 @@ import Client from './node_modules/shopify-buy/index.es.js';
     });
 
     // Render product to add
-    document.querySelector('#products').getAttribute('data-products').split(',').forEach(handle => {
-        client.product.fetchByHandle(handle).then(renderProduct);
-    });
+    const handles = document.querySelector('#products').getAttribute('data-products').split(',');
+    for (var i in handles) {
+        await client.product.fetchByHandle(handles[i]).then(renderProduct);
+    }
 
     const checkoutId = await initCart().then((checkout) => {
         renderCart(checkout);
@@ -34,29 +35,35 @@ import Client from './node_modules/shopify-buy/index.es.js';
         });
 
         // build options
-        product.options.forEach((option) => {
-            var optionContainer = document.querySelector('#product-option').content.cloneNode(true);
-            var selectOptionEl = optionContainer.querySelector('.select-option');
-            selectOptionEl.setAttribute('data-name', option.name);
-            option.values.forEach((optionValue) => {
-                var optionEl = document.createElement('option');
-                optionEl.setAttribute('value', optionValue.value);
-                optionEl.textContent = optionValue.value;
-                selectOptionEl.appendChild(optionEl);
+        if (product.variants.length > 1) {
+            product.options.forEach((option) => {
+                var optionContainer = document.querySelector('#product-option').content.cloneNode(true);
+                var selectOptionEl = optionContainer.querySelector('.select-option');
+                selectOptionEl.setAttribute('data-name', option.name);
+                option.values.forEach((optionValue) => {
+                    var optionEl = document.createElement('option');
+                    optionEl.setAttribute('value', optionValue.value);
+                    optionEl.textContent = optionValue.value;
+                    selectOptionEl.appendChild(optionEl);
+                });
+                optionContainer.querySelector('.option-name').textContent = option.name;
+                productEl.querySelector('.options').appendChild(optionContainer);
             });
-            optionContainer.querySelector('.option-name').textContent = option.name;
-            productEl.querySelector('.options').appendChild(optionContainer);
-        });
+        }
 
         // add product on click
         productEl.querySelectorAll('.add-to-cart').forEach((button) => {
             button.addEventListener('click', (e) => {
-                var options = {};
-                e.target.closest('.product').querySelectorAll('.options select').forEach((selectEl) => {
-                    options[selectEl.getAttribute('data-name')] = selectEl.value;
-                });
+                if (product.variants.length > 1) {
+                    var options = {};
+                    e.target.closest('.product').querySelectorAll('.options select').forEach((selectEl) => {
+                        options[selectEl.getAttribute('data-name')] = selectEl.value;
+                    });
 
-                addProduct(button.getAttribute('data-id'), options);
+                    addProduct(button.getAttribute('data-id'), options);
+                } else {
+                    addProduct(button.getAttribute('data-id'));
+                }
             }, false);
         });
 
@@ -85,8 +92,12 @@ import Client from './node_modules/shopify-buy/index.es.js';
                 lineItemEl.querySelector('.options').textContent = lineItem.variant.title;
                 lineItemEl.querySelector('.price').textContent = lineItem.variant.price;
                 var imageEl = lineItemEl.querySelector('.image');
-                imageEl.setAttribute('src', lineItem.variant.image.src);
-                imageEl.setAttribute('alt', lineItem.variant.image.altText);
+                if (lineItem.variant.image) {
+                    imageEl.setAttribute('src', lineItem.variant.image.src);
+                    imageEl.setAttribute('alt', lineItem.variant.image.altText);
+                } else {
+                    imageEl.parentNode.removeChild(imageEl);
+                }
                 cartEl.querySelector('.cart-items').appendChild(lineItemEl);
             });
 
@@ -122,7 +133,7 @@ import Client from './node_modules/shopify-buy/index.es.js';
                     }
                 });
             } else {
-                product.variants[0].id;
+                variantId = product.variants[0].id;
             }
 
             if (!variantId) {
