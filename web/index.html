@@ -1,0 +1,57 @@
+<html>
+<head>
+<style>
+    #cart-container {
+        float: right;
+        max-width: 300px;
+    }
+</style>
+</head>
+<body>
+
+    <div id="cart-container">
+    </div>
+
+    <div id="products" data-products="test-product">
+    </div>
+
+    <template id="product">
+        <div class="product">
+            <h4 class="title"></h4>
+            <div class="images"></div>
+            <div class="options"></div>
+            <a href="#" class="add-to-cart">Add to Cart</a>
+        </div>
+    </template>
+
+    <template id="product-option">
+        <div class="option">
+            <strong class="option-name">Example Option</strong>: <select class="select-option"></select>
+        </div>
+    </template>
+
+    <template id="cart">
+        <h3>Shopping Cart</h3>
+        <p class="checkout-buttons"><a href="#" class="checkout">Checkout</a> | <a href="#" class="clear-cart">Clear Cart</a></p>
+        <div class="cart-items">
+        </div>
+        <p class="checkout-buttons"><a href="#" class="checkout">Checkout</a> | <a href="#" class="clear-cart">Clear Cart</a></p>
+    </template>
+
+    <template id="cart-empty">
+        <h3>Shopping Cart</h3>
+        <p>Your cart is empty.</p>
+    </template>
+
+    <template id="cart-line-item">
+        <div class="line-item">
+            <h4 class="title"></h4>
+            <img class="image" width="50">
+            <p><strong>Quantity:</strong> <span class="quantity"></p>
+            <p><strong>Options:</strong> <span class="options"></p>
+            <p><strong>Price:</strong> <span class="price"></p>
+        </div>
+    </template>
+
+    <script type="module" src="./buy-button.js"></script>
+</body>

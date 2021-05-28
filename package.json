@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "express": "^4.17.1",
+    "shopify-buy": "^2.11.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "type": "module"
+}
